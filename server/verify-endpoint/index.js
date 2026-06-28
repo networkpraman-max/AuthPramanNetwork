@@ -356,9 +356,16 @@ app.post('/api/auth/login', async (req, res) => {
 
     // Verify publicSignals matching on-chain data
     // For real ZK proofs, publicSignals[0] is isMatch, and publicSignals[1...128] contains the reference vector.
-    // We compute the Keccak256 hash of this reference vector and compare it with the registered storedFaceHash.
+    // Since Circom represents negative numbers in the BN254 finite field modulo P, we map them back to signed BigInts.
     try {
-      const publicSavedVector = publicSignals.slice(1, 129).map(x => Number(x));
+      const BN254_PRIME = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
+      const halfPrime = BN254_PRIME / 2n;
+
+      const publicSavedVector = publicSignals.slice(1, 129).map(x => {
+        const val = BigInt(x);
+        return val > halfPrime ? val - BN254_PRIME : val;
+      });
+
       if (publicSavedVector.length !== 128) {
         return res.status(400).json({
           success: false,
