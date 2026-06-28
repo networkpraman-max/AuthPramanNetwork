@@ -5,14 +5,15 @@ import {
   initPraman,
   decryptPII,
   getManualAuthSig,
-  fetchFromIPFS
+  fetchFromIPFS,
+  DEFAULT_RELAYER_URL
 } from '@praman/sdk';
 
 // Initialize the PramanAuth SDK with Backend Relayer URL
 const praman = initPraman({
   apiKey: "pm_dev_identity_provider",
   network: "polygon-amoy",
-  backendUrl: "http://localhost:4000", // Centralized Relayer Backend API
+  backendUrl: DEFAULT_RELAYER_URL, // Centralized Relayer Backend API
 });
 
 export type ProgressStep =

@@ -5,6 +5,8 @@ import { generateZKFaceProof } from './zkLayer';
 import { encryptPII, uploadToIPFS, getManualAuthSig, decryptPII, getPermissionAuthSig, fetchFromIPFS } from './storageLayer';
 import faceRegistryConfig from './contracts/FaceRegistry.json';
 
+export const DEFAULT_RELAYER_URL = 'https://auth-praman-network-verify-endpoint.vercel.app';
+
 // Keep global client instance
 let globalClientInstance: PramanClient | null = null;
 
@@ -20,7 +22,7 @@ export class PramanClient {
     this.apiKey = config.apiKey;
     this.network = config.network;
     this.webhookUrl = config.webhookUrl;
-    this.backendUrl = config.backendUrl || 'http://localhost:4000';
+    this.backendUrl = config.backendUrl || DEFAULT_RELAYER_URL;
     this.adminAddress = config.adminAddress || '0x499B85172C9a228eaE3D7723223DFF062bFdFd4D';
 
     // Normalize liveness level config

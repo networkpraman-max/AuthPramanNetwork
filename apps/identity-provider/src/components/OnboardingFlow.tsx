@@ -5,7 +5,8 @@ import type { ProgressStep } from '../hooks/usePramanIdentity';
 import {
   DeviceGuard,
   useLivenessGuard,
-  PramanAuth
+  PramanAuth,
+  DEFAULT_RELAYER_URL
 } from '@praman/sdk';
 import { FilesetResolver, FaceLandmarker } from '@mediapipe/tasks-vision';
 
@@ -203,7 +204,7 @@ export function OnboardingFlow() {
       addLog('No physical camera detected or permission denied. Starting Mobile Handover...');
       setIsHandoverActive(true);
       
-      const serverUrl = 'http://localhost:4000';
+      const serverUrl = DEFAULT_RELAYER_URL;
       const response = await fetch(`${serverUrl}/api/handover/init`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -253,7 +254,7 @@ export function OnboardingFlow() {
   useEffect(() => {
     if (!handoverSessionId || !isHandoverActive) return;
 
-    const serverUrl = 'http://localhost:4000';
+    const serverUrl = DEFAULT_RELAYER_URL;
     let pollInterval: any;
 
     pollInterval = setInterval(async () => {

@@ -1,4 +1,4 @@
-export { initPraman, PramanClient } from './client';
+export { initPraman, PramanClient, DEFAULT_RELAYER_URL } from './client';
 export type { PramanConfig, AuthResult, ProgressStepData, PramanErrorType } from './types';
 export { PramanErrors } from './types';
 export { quantizeFaceVector, hashFaceVector } from './biometrics';
