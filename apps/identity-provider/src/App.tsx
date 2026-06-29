@@ -2,7 +2,9 @@ import { OnboardingFlow } from './components/OnboardingFlow';
 
 function App() {
   return (
-    <div className="flex-1 bg-[#0b0c10] min-h-screen flex flex-col justify-between text-zinc-100 selection:bg-purple-600/30">
+    <div className="flex-1 bg-[#0b0c10] min-h-screen flex flex-col justify-between text-zinc-100 selection:bg-purple-600/30 relative">
+      {/* Noise background overlay */}
+      <div className="absolute inset-0 bg-noise opacity-[0.035] pointer-events-none z-0" />
       {/* Header Navbar */}
       <header className="border-b border-zinc-900 bg-zinc-950/40 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -15,7 +17,7 @@ function App() {
           </div>
           <div className="flex items-center gap-4 text-xs font-semibold text-zinc-400">
             <span className="bg-zinc-900 border border-zinc-800 px-2.5 py-1 rounded-full text-purple-400">
-              datil-dev network
+              praman network
             </span>
           </div>
         </div>
