@@ -8,10 +8,10 @@ export default defineConfig({
   shims: true,
   minify: false,
   sourcemap: true,
-  // Fix: Bundling tslib inside so it doesn't try to require() it
+  // TSLib ko bundle ke andar force karo
   noExternal: ['tslib'], 
-  // Fix: Better CJS interop
-  cjsInterop: true, 
+  // IMPORTANT: Jo dependencies browser-side use ho rahi hain, unhe external rakho
+  // Lekin tslib ko yahan se hata do
   external: [
     'react',
     'ethers',
