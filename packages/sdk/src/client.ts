@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { PramanConfig, AuthResult, PopupOptions, PopupAuthResult } from './types';
-import { quantizeFaceVector, hashFaceVector } from './biometrics';
+import { quantizeFaceVector, hashFaceVector, getStableVector } from './biometrics';
 import { generateZKFaceProof } from './zkLayer';
 import { encryptPII, uploadToIPFS, getManualAuthSig, decryptPII, getPermissionAuthSig, fetchFromIPFS } from './storageLayer';
 import faceRegistryConfig from './contracts/FaceRegistry.json';
@@ -215,7 +215,8 @@ export class PramanClient {
       }
 
       const faceVector = Array.from(detection.descriptor) as number[];
-      const quantizedNewVector = quantizeFaceVector(faceVector);
+      const stableVector = getStableVector(faceVector);
+      const quantizedNewVector = quantizeFaceVector(stableVector);
       const faceDescriptorHash = hashFaceVector(quantizedNewVector);
       log('generating-vector', `Face vector quantized. Keccak Hash: ${faceDescriptorHash}`);
 
@@ -319,7 +320,8 @@ export class PramanClient {
       }
 
       const faceVector = Array.from(detection.descriptor) as number[];
-      const quantizedNewVector = quantizeFaceVector(faceVector);
+      const stableVector = getStableVector(faceVector);
+      const quantizedNewVector = quantizeFaceVector(stableVector);
       const faceDescriptorHash = hashFaceVector(quantizedNewVector);
       log('generating-vector', `Face vector quantized. Keccak Hash: ${faceDescriptorHash}`);
 

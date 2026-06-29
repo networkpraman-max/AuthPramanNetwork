@@ -1,6 +1,15 @@
 import { ethers } from 'ethers';
 
 /**
+ * Normalizes a 128-d face descriptor array by rounding each element to 2 decimal places.
+ * This ensures deterministic hashing across different scanning sessions.
+ */
+export function getStableVector(vector: number[] | Float32Array): number[] {
+  const arr = Array.isArray(vector) ? vector : Array.from(vector);
+  return arr.map((val) => Math.round(val * 100) / 100);
+}
+
+/**
  * Quantizes a Float32Array or number[] face vector into an array of integers.
  * Circom/SnarkJS does not support floating point arithmetic, so we multiply by 10^5 (100000) and round.
  */
