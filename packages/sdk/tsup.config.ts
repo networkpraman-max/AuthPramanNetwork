@@ -5,13 +5,18 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   dts: true,
   clean: true,
-  shims: true,
   minify: false,
   sourcemap: true,
-  // TSLib ko bundle ke andar force karo
-  noExternal: ['tslib'], 
-  // IMPORTANT: Jo dependencies browser-side use ho rahi hain, unhe external rakho
-  // Lekin tslib ko yahan se hata do
+  noExternal: ['tslib'], // Bundling tslib
+  
+  // FINAL FIX: Inject a dummy require function for browser environments
+  banner: {
+    js: `
+      import { createRequire as __createRequire } from 'module';
+      const require = (typeof window !== 'undefined') ? (() => {}) : __createRequire(import.meta.url);
+    `,
+  },
+  
   external: [
     'react',
     'ethers',
