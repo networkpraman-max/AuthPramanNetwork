@@ -36,9 +36,10 @@ Initialize the SDK instance inside your app config or root component. Pass the B
 import { initPraman } from '@praman-network/sdk';
 
 const praman = initPraman({
-  apiKey: "pm_live_your_api_key_here",
+  apiKey: "YOUR_API_KEY",
   network: "polygon-amoy",
-  backendUrl: "https://your-relayer-backend.com" // Your Backend Relayer URL
+  idpUrl: "https://auth.praman.network",   // Updated for production
+  backendUrl: "https://api.praman.network" // Updated for production
 });
 ```
 
@@ -52,9 +53,10 @@ import { initPraman } from '@praman-network/sdk';
 
 // Initialize PramanAuth SDK
 const pramanAuth = initPraman({
-  apiKey: "pm_sandbox_test",
+  apiKey: "YOUR_API_KEY",
   network: "polygon-amoy",
-  idpUrl: "https://auth.praman.network/authorize" // Standard hosted Identity Provider URL
+  idpUrl: "https://auth.praman.network",
+  backendUrl: "https://api.praman.network"
 });
 
 export function App() {
