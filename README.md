@@ -28,6 +28,37 @@ Add the SDK package to your frontend project:
 npm install @praman-network/sdk
 ```
 
+### Setup with Vite (React / Vue)
+
+If you are using Vite, you might encounter errors like `global is not defined` or `Buffer is not defined`. This happens because Web3 libraries rely on Node.js built-ins. 
+
+To fix this, simply add Node polyfills to your Vite project:
+
+**1. Install the polyfill plugin:**
+```bash
+npm install vite-plugin-node-polyfills --save-dev
+```
+
+**2. Update your `vite.config.js` or `vite.config.ts`:**
+```javascript
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+
+export default defineConfig({
+  plugins: [
+    react(),
+    nodePolyfills({
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
+    }),
+  ],
+});
+```
+
 ### 1. Initialization
 
 Initialize the SDK instance inside your app config or root component. Pass the Backend Relayer URL so that the SDK can delegate blockchain transactions and storage uploads:

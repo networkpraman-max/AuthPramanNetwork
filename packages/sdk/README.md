@@ -29,6 +29,37 @@ Install the core package in your React, Next.js, or Vite frontend application:
 npm install @praman-network/sdk
 ```
 
+### Setup with Vite (React / Vue)
+
+If you are using Vite, you might encounter errors like `global is not defined` or `Buffer is not defined`. This happens because Web3 libraries rely on Node.js built-ins. 
+
+To fix this, simply add Node polyfills to your Vite project:
+
+**1. Install the polyfill plugin:**
+```bash
+npm install vite-plugin-node-polyfills --save-dev
+```
+
+**2. Update your `vite.config.js` or `vite.config.ts`:**
+```javascript
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+
+export default defineConfig({
+  plugins: [
+    react(),
+    nodePolyfills({
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
+    }),
+  ],
+});
+```
+
 ### 2. Initialization
 
 Initialize the SDK instance inside your app config or root component. Pass your API key, preferred network, and production URLs:
