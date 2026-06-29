@@ -226,8 +226,3 @@ PramanAuth is open-source. Help us build a safer, passwordless, decentralized fu
 *   **GitHub Repository:** [Praman-Network/AuthPramanNetwork](https://github.com/Praman-Network/AuthPramanNetwork)
 *   **Contribute:** Submit pull requests or open feature requests in our GitHub issues.
 *   **Support:** Reach out to the core engineering team for API keys and developer support.
-
----
-
-### Keywords
-`["web3", "authentication", "zk-snark", "identity", "biometric", "passwordless", "polygon", "decentralized-auth"]`
