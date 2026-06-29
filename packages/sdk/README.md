@@ -13,7 +13,7 @@ Under the new **Web2.5 Hybrid Relayer (BaaS)** architecture, transactions are ga
 Add the SDK package to your frontend project:
 
 ```bash
-npm install @praman/sdk
+npm install @praman-network/sdk
 ```
 
 ---
@@ -23,7 +23,7 @@ npm install @praman/sdk
 Initialize the SDK instance inside your app config or root component (compatible with both Next.js and Vite). Pass the `backendUrl` of your Backend Relayer:
 
 ```typescript
-import { initPraman } from '@praman/sdk';
+import { initPraman } from '@praman-network/sdk';
 
 const praman = initPraman({
   apiKey: "pm_live_your_api_key_here",
@@ -40,7 +40,7 @@ You can launch a centered OAuth-style popup window for face scanning and consent
 
 ```typescript
 import React, { useState } from 'react';
-import { initPraman } from '@praman/sdk';
+import { initPraman } from '@praman-network/sdk';
 
 // Initialize PramanAuth SDK
 const pramanAuth = initPraman({

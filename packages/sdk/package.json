@@ -1,5 +1,5 @@
 {
-  "name": "@praman/sdk",
+  "name": "@praman-network/sdk",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -10,8 +10,7 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    },
-    "./contracts/*": "./src/contracts/*"
+    }
   },
   "scripts": {
     "build": "tsup",
@@ -29,5 +28,10 @@
   "devDependencies": {
     "tsup": "^8.0.2",
     "typescript": "^5.0.0"
-  }
+  },
+  "files": [
+  "dist",
+  "README.md",
+  "package.json"
+]
 }

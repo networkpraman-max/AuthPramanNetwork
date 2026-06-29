@@ -5,7 +5,25 @@ import { generateZKFaceProof } from './zkLayer';
 import { encryptPII, uploadToIPFS, getManualAuthSig, decryptPII, getPermissionAuthSig, fetchFromIPFS } from './storageLayer';
 import faceRegistryConfig from './contracts/FaceRegistry.json';
 
-export const DEFAULT_RELAYER_URL = 'https://auth-praman-network-verify-endpoint.vercel.app';
+// Helper to get environment variable across builders
+const getSDKDefaultRelayerUrl = (): string => {
+  if (typeof process !== 'undefined' && process.env) {
+    if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
+    if (process.env.VITE_BACKEND_URL) return process.env.VITE_BACKEND_URL;
+  }
+  try {
+    // @ts-ignore
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+      // @ts-ignore
+      if (import.meta.env.NEXT_PUBLIC_API_URL) return import.meta.env.NEXT_PUBLIC_API_URL;
+      // @ts-ignore
+      if (import.meta.env.VITE_BACKEND_URL) return import.meta.env.VITE_BACKEND_URL;
+    }
+  } catch (e) {}
+  return 'https://api.praman.network';
+};
+
+export const DEFAULT_RELAYER_URL = getSDKDefaultRelayerUrl();
 
 // Keep global client instance
 let globalClientInstance: PramanClient | null = null;

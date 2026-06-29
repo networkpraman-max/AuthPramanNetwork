@@ -1,6 +1,6 @@
 # Monorepo Refactor Walkthrough & IaaS Platform Architecture
 
-We have successfully refactored the PramanAuth project into a modular, production-ready, Turborepo-driven monorepo containing a publishable `@praman/sdk` NPM package, a hosted identity provider app, developer docs, and a backend verification server.
+We have successfully refactored the PramanAuth project into a modular, production-ready, Turborepo-driven monorepo containing a publishable `@praman-network/sdk` NPM package, a hosted identity provider app, developer docs, and a backend verification server.
 
 ---
 
@@ -12,7 +12,7 @@ We have successfully refactored the PramanAuth project into a modular, productio
 ├── turbo.json                      ← task execution orchestrator
 ├── tsconfig.json                   ← workspace TS references
 ├── packages/
-│   └── sdk/                        ← @praman/sdk package
+│   └── sdk/                        ← @praman-network/sdk package
 │       ├── package.json            ← public exports (esm/cjs/dts)
 │       ├── tsup.config.ts          ← build configuration (zero-config, high-performance)
 │       ├── tsconfig.json           ← target ESM & React JSX compilation configs
@@ -26,8 +26,8 @@ We have successfully refactored the PramanAuth project into a modular, productio
 │               └── FaceRegistry.json
 ├── apps/
 │   ├── identity-provider/          ← hosted provider application
-│   │   ├── package.json            ← imports `@praman/sdk` locally
-│   │   ├── src/                    ← onboarding & login flows utilizing `@praman/sdk`
+│   │   ├── package.json            ← imports `@praman-network/sdk` locally
+│   │   ├── src/                    ← onboarding & login flows utilizing `@praman-network/sdk`
 │   │   └── public/                 ← face-api models and zk proving files
 │   └── documentation/
 │       └── README.md               ← developer implementation guide
@@ -69,5 +69,5 @@ Turborepo builds all modules concurrently in optimal topological order. Output i
 ```bash
 npx turbo run build
 ```
-- `@praman/sdk`: Builds ES module (`dist/index.js`), CommonJS (`dist/index.cjs`), and TypeScript declarations (`dist/index.d.ts`).
+- `@praman-network/sdk`: Builds ES module (`dist/index.js`), CommonJS (`dist/index.cjs`), and TypeScript declarations (`dist/index.d.ts`).
 - `identity-provider`: Successfully compiles into client assets.

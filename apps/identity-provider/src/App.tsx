@@ -9,7 +9,7 @@ function App() {
           <div className="flex items-center gap-3">
             {/* Logo Icon */}
             <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-blue-500 flex items-center justify-center font-bold text-sm tracking-widest text-white shadow-md shadow-purple-500/20">
-              P
+              <img src='./PramanLogo.png' alt='Praman '/>
             </div>
             <span className="font-bold tracking-tight text-white">PramanAuth</span>
           </div>

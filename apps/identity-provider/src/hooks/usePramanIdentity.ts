@@ -7,7 +7,7 @@ import {
   getManualAuthSig,
   fetchFromIPFS,
   DEFAULT_RELAYER_URL
-} from '@praman/sdk';
+} from '@praman-network/sdk';
 
 // Initialize the PramanAuth SDK with Backend Relayer URL
 const praman = initPraman({
@@ -39,7 +39,7 @@ interface PramanIdentityConfig {
 
 export function usePramanIdentity(config?: PramanIdentityConfig) {
   const adminAddress = config?.adminAddress || '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
-  
+
   // Use stable ref to prevent infinite callback re-creations
   const onLogRef = useRef(config?.onLog);
   useEffect(() => {
@@ -97,10 +97,10 @@ export function usePramanIdentity(config?: PramanIdentityConfig) {
       if (accounts.length === 0) {
         throw new Error('No accounts returned from wallet.');
       }
-      
+
       const signer = await provider.getSigner();
       const address = await signer.getAddress();
-      
+
       setWalletAddress(address);
       setProgressStep('idle');
       addLog(`MetaMask connected: ${address}`);
@@ -128,7 +128,7 @@ export function usePramanIdentity(config?: PramanIdentityConfig) {
       await faceapi.nets.ssdMobilenetv1.loadFromUri(localModelUrl);
       await faceapi.nets.faceLandmark68Net.loadFromUri(localModelUrl);
       await faceapi.nets.faceRecognitionNet.loadFromUri(localModelUrl);
-      
+
       setIsModelLoaded(true);
       setProgressStep('idle');
       addLog('Face models loaded successfully from local storage.');
@@ -138,7 +138,7 @@ export function usePramanIdentity(config?: PramanIdentityConfig) {
         await faceapi.nets.ssdMobilenetv1.loadFromUri(cdnModelUrl);
         await faceapi.nets.faceLandmark68Net.loadFromUri(cdnModelUrl);
         await faceapi.nets.faceRecognitionNet.loadFromUri(cdnModelUrl);
-        
+
         setIsModelLoaded(true);
         setProgressStep('idle');
         addLog('Face models loaded successfully from CDN fallback.');
@@ -183,7 +183,7 @@ export function usePramanIdentity(config?: PramanIdentityConfig) {
       try {
         const provider = new ethers.BrowserProvider((window as any).ethereum);
         signer = await provider.getSigner();
-      } catch (e) {}
+      } catch (e) { }
     }
 
     try {
@@ -254,7 +254,7 @@ export function usePramanIdentity(config?: PramanIdentityConfig) {
       try {
         const provider = new ethers.BrowserProvider((window as any).ethereum);
         signer = await provider.getSigner();
-      } catch (e) {}
+      } catch (e) { }
     }
 
     try {
@@ -307,14 +307,14 @@ export function usePramanIdentity(config?: PramanIdentityConfig) {
     } else {
       activeSigner = (praman as any).getLocalEphemeralWallet();
     }
-    
+
     addLog('Fetching encrypted payload from IPFS...');
     const payload = await fetchFromIPFS(ipfsCid);
 
     addLog('Starting test decryption flow...');
     try {
       const authSig = await getManualAuthSig(activeSigner);
-      
+
       const decrypted = await decryptPII(
         payload.ciphertext,
         payload.dataToEncryptHash,
@@ -322,7 +322,7 @@ export function usePramanIdentity(config?: PramanIdentityConfig) {
         adminAddress,
         authSig
       );
-      
+
       addLog('Test decryption successful!');
       return decrypted;
     } catch (err: any) {

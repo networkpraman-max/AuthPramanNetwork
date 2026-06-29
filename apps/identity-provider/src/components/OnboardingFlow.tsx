@@ -7,7 +7,7 @@ import {
   useLivenessGuard,
   PramanAuth,
   DEFAULT_RELAYER_URL
-} from '@praman/sdk';
+} from '@praman-network/sdk';
 import { FilesetResolver, FaceLandmarker } from '@mediapipe/tasks-vision';
 
 const faceapi = (window as any).faceapi;
@@ -33,7 +33,7 @@ export function OnboardingFlow() {
   const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
   const [customRedirectUrl, setCustomRedirectUrl] = useState('https://httpbin.org/get');
   const [countdown, setCountdown] = useState(3);
-  
+
   // Decryption Sandbox State
   const [decryptedData, setDecryptedData] = useState<any>(null);
   const [isDecrypting, setIsDecrypting] = useState(false);
@@ -88,7 +88,7 @@ export function OnboardingFlow() {
   } | null>(null);
 
   const webcamRef = useRef<Webcam>(null);
-  
+
   const {
     walletAddress,
     isModelLoaded,
@@ -236,7 +236,7 @@ export function OnboardingFlow() {
     try {
       addLog('No physical camera detected or permission denied. Starting Mobile Handover...');
       setIsHandoverActive(true);
-      
+
       const serverUrl = DEFAULT_RELAYER_URL;
       const response = await fetch(`${serverUrl}/api/handover/init`, {
         method: 'POST',
@@ -247,12 +247,12 @@ export function OnboardingFlow() {
         }),
       });
       const data = await response.json();
-      
+
       if (data.success) {
         setHandoverSessionId(data.sessionId);
         setHandoverToken(data.handoverToken);
         addLog(`Handover session initialized. Session ID: ${data.sessionId}`);
-        
+
         // Save to local storage for local tab sync fallback
         const handoverUrl = `${window.location.origin}${window.location.pathname}?handoverToken=${data.handoverToken}`;
         localStorage.setItem(`handover_url_${data.sessionId}`, handoverUrl);
@@ -265,7 +265,7 @@ export function OnboardingFlow() {
       const mockToken = generateLocalHandoverToken(mockSessionId, walletAddress || '', authMode);
       setHandoverSessionId(mockSessionId);
       setHandoverToken(mockToken);
-      
+
       const handoverUrl = `${window.location.origin}${window.location.pathname}?handoverToken=${mockToken}`;
       localStorage.setItem(`handover_url_${mockSessionId}`, handoverUrl);
     }
@@ -299,7 +299,7 @@ export function OnboardingFlow() {
           setIsHandoverActive(false);
           setHandoverSessionId(null);
           setHandoverToken(null);
-          
+
           if (data.result.success) {
             addLog('Mobile verification completed successfully! Handover verified.');
             window.location.reload();
@@ -307,7 +307,7 @@ export function OnboardingFlow() {
             addLog(`Mobile verification failed: ${data.result.error}`);
           }
         }
-      } catch (err) {}
+      } catch (err) { }
     }, 2000);
 
     // Local Storage cross-tab receiver fallback
@@ -328,7 +328,7 @@ export function OnboardingFlow() {
           } else {
             addLog(`Simulated handover failed: ${result.error}`);
           }
-        } catch {}
+        } catch { }
       }
     };
 
@@ -410,7 +410,7 @@ export function OnboardingFlow() {
     }
 
     addLog('Authentication successful! Sending payload back to parent window...');
-    
+
     // Standardized Firebase-style response
     const payload = {
       success: true,
@@ -462,7 +462,7 @@ export function OnboardingFlow() {
       addLog('Webcam ref not ready.');
       return;
     }
-    
+
     try {
       addLog('Capturing video frame...');
       const imageSrc = webcamRef.current.getScreenshot();
@@ -470,10 +470,10 @@ export function OnboardingFlow() {
         throw new Error('Webcam returned empty screenshot');
       }
       setScreenshot(imageSrc);
-      
+
       // Stop scanner camera stream UI
       setIsScanning(false);
-      
+
       let result = null;
       if (authMode === 'register') {
         addLog('Executing Registration flow...');
@@ -612,7 +612,7 @@ export function OnboardingFlow() {
     setIsDecrypting(true);
     setDecryptionError(null);
     setDecryptedData(null);
-    
+
     try {
       const decrypted = await testDecryption(ipfsCid);
       setDecryptedData(decrypted);
@@ -626,7 +626,7 @@ export function OnboardingFlow() {
   const getStepColor = (step: string) => {
     if (progressStep === 'error') return 'border-red-500 text-red-400 bg-red-950/20';
     if (progressStep === 'success') return 'border-green-500 text-green-400 bg-green-950/20';
-    
+
     const stepsOrder: ProgressStep[] = [
       'idle',
       'connecting-wallet',
@@ -640,10 +640,10 @@ export function OnboardingFlow() {
       'registering-on-chain',
       'success'
     ];
-    
+
     const currentIndex = stepsOrder.indexOf(progressStep);
     const targetIndex = stepsOrder.indexOf(step as ProgressStep);
-    
+
     if (currentIndex > targetIndex) return 'border-purple-600 text-purple-400 bg-purple-950/20'; // Completed
     if (progressStep === step) return 'border-blue-500 text-blue-400 bg-blue-950/20 animate-pulse-ring'; // Active
     return 'border-zinc-800 text-zinc-500 bg-zinc-900/40'; // Pending
@@ -771,7 +771,7 @@ export function OnboardingFlow() {
 
       {/* Onboarding Main panel */}
       <div className="w-full lg:w-3/5 bg-zinc-900/60 backdrop-blur-xl border border-zinc-800 rounded-3xl p-6 lg:p-8 shadow-2xl relative overflow-hidden">
-        
+
         <div className="absolute top-0 right-0 w-48 h-48 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -799,7 +799,7 @@ export function OnboardingFlow() {
               <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 border-b border-zinc-900 pb-2">
                 Requested Permissions
               </h3>
-              
+
               {/* Permission Item 1: Mandatory Biometric ZK Proof */}
               <div className="flex items-start justify-between gap-4 p-3 bg-zinc-900/40 border border-zinc-800/60 rounded-xl">
                 <div className="space-y-1">
@@ -875,7 +875,7 @@ export function OnboardingFlow() {
                 onClick={async () => {
                   setHasConsented(true);
                   addLog('User granted data permissions. Proceeding to identity verification...');
-                  
+
                   // Automatically trigger wallet connection if not connected
                   if (!walletAddress) {
                     addLog('Automatically connecting wallet...');
@@ -890,520 +890,515 @@ export function OnboardingFlow() {
           </div>
         ) : (
           <>
-        
-        <div className="mb-6 text-center lg:text-left">
-          <span className="px-3 py-1 text-xs font-semibold tracking-widest text-purple-400 uppercase bg-purple-950/30 border border-purple-800/50 rounded-full">
-            Biometric Identity Provider
-          </span>
-          <h1 className="text-3xl font-bold tracking-tight text-white mt-3">
-            PramanAuth ZK-Identity
-          </h1>
-          <p className="text-sm text-zinc-400 mt-2">
-            100% decentralized · Client-side biometrics · ZK Proofs · No central DB
-          </p>
-        </div>
 
-        {/* Tab switcher */}
-        {!isScanning && progressStep !== 'success' && progressStep !== 'redirecting' && !isProcessing && (
-          <div className="flex gap-1 p-1 bg-zinc-950/80 border border-zinc-800 rounded-2xl mb-6">
-            <button
-              type="button"
-              id="tab-register"
-              onClick={() => setAuthMode('register')}
-              className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-200 ${
-                authMode === 'register'
-                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
-                  : 'text-zinc-500 hover:text-zinc-300'
-              }`}
-            >
-              ✦ Register
-            </button>
-            <button
-              type="button"
-              id="tab-login"
-              onClick={() => setAuthMode('login')}
-              className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-200 ${
-                authMode === 'login'
-                  ? 'bg-gradient-to-r from-green-600 to-teal-600 text-white shadow-lg'
-                  : 'text-zinc-500 hover:text-zinc-300'
-              }`}
-            >
-              ⚡ Login
-            </button>
-          </div>
-        )}
-
-        {/* REGISTER FORM */}
-        {!isScanning && progressStep !== 'success' && progressStep !== 'redirecting' && authMode === 'register' && (
-          <form onSubmit={startScanningFlow} className="space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Enter name"
-                  disabled={isProcessing}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors"
-                />
-                {formErrors.name && <p className="text-xs text-red-500 mt-1">{formErrors.name}</p>}
-              </div>
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="Enter email"
-                  disabled={isProcessing}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors"
-                />
-                {formErrors.email && <p className="text-xs text-red-500 mt-1">{formErrors.email}</p>}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-                Mobile Number (E.164 Format)
-              </label>
-              <input
-                type="text"
-                name="mobile"
-                value={formData.mobile}
-                onChange={handleInputChange}
-                placeholder="+1234567890"
-                disabled={isProcessing}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors"
-              />
-              {formErrors.mobile && <p className="text-xs text-red-500 mt-1">{formErrors.mobile}</p>}
-            </div>
-
-            {/* Liveness settings configurator dropdown */}
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-                Liveness Spoof Protection
-              </label>
-              <select
-                value="strict"
-                disabled
-                className="w-full bg-zinc-950 border border-zinc-800 text-zinc-500 text-xs rounded-xl px-4 py-3 outline-none opacity-60 cursor-not-allowed"
-              >
-                <option value="strict">Strict Protection (Hard Enforced for Registration)</option>
-              </select>
-            </div>
-
-            {/* Wallet Info Banner */}
-            <div className="bg-zinc-950/80 border border-zinc-800/80 rounded-2xl p-4 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className={`w-3 h-3 rounded-full ${walletAddress ? 'bg-green-500 glow-green' : 'bg-amber-500 animate-pulse'}`} />
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400">Connected Wallet</h4>
-                  <p className="text-xs font-mono text-zinc-500 mt-0.5 truncate max-w-[200px] sm:max-w-xs">
-                    {walletAddress || 'Not Connected'}
-                  </p>
-                </div>
-              </div>
-              {!walletAddress && (
-                <button
-                  type="button"
-                  onClick={connectWallet}
-                  className="px-4 py-2 text-xs font-semibold text-white bg-zinc-800 hover:bg-zinc-700 active:scale-95 border border-zinc-700 rounded-xl transition-all"
-                >
-                  Connect Wallet
-                </button>
-              )}
-            </div>
-
-            <button
-              id="btn-register-scan"
-              type="submit"
-              disabled={isProcessing || !isModelLoaded}
-              className={`w-full py-4 rounded-xl text-sm font-bold tracking-wider uppercase text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 active:scale-[0.99] transition-all flex items-center justify-center gap-3 shadow-lg glow-purple ${
-                (!isModelLoaded || isProcessing) && 'opacity-50 cursor-not-allowed'
-              }`}
-            >
-              {!isModelLoaded ? (
-                <><div className="w-5 h-5 border-2 border-zinc-400 border-t-white rounded-full animate-spin" />Loading Neural Nets...</>
-              ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
-                  </svg>
-                  Scan Face &amp; Create Identity
-                </>
-              )}
-            </button>
-          </form>
-        )}
-
-        {/* LOGIN FORM */}
-        {!isScanning && progressStep !== 'success' && progressStep !== 'redirecting' && authMode === 'login' && (
-          <form onSubmit={startScanningFlow} className="space-y-5">
-            <div className="bg-teal-950/30 border border-teal-800/40 rounded-2xl p-5 text-center space-y-2">
-              <div className="w-14 h-14 mx-auto rounded-full bg-teal-500/10 border border-teal-500/30 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 text-teal-400">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M7.864 4.243A7.5 7.5 0 0 1 19.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 0 0 4.5 10.5a7.464 7.464 0 0 1-1.15 3.993m1.989 3.559A11.209 11.209 0 0 0 8.25 10.5a3.75 3.75 0 1 1 7.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 0 1-3.6 9.75m6.633-4.596a18.666 18.666 0 0 1-2.485 5.33" />
-                </svg>
-              </div>
-              <h3 className="text-sm font-bold text-teal-300">Biometric Login with ZK Proof</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                A <span className="text-teal-400 font-semibold">Groth16 ZK Proof</span> verifies your identity without revealing biometric descriptors.
+            <div className="mb-6 text-center lg:text-left">
+              <span className="px-3 py-1 text-xs font-semibold tracking-widest text-purple-400 uppercase bg-purple-950/30 border border-purple-800/50 rounded-full">
+                Biometric Identity Provider
+              </span>
+              <h1 className="text-3xl font-bold tracking-tight text-white mt-3">
+                PramanAuth ZK-Identity
+              </h1>
+              <p className="text-sm text-zinc-400 mt-2">
+                100% decentralized · Client-side biometrics · ZK Proofs · No central DB
               </p>
             </div>
 
-            {/* Liveness Selector */}
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-                Liveness Spoof Protection
-              </label>
-              <select
-                value={livenessLevel}
-                onChange={(e) => setLivenessLevel(e.target.value as any)}
-                className="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs rounded-xl px-4 py-3 outline-none focus:border-purple-500"
-              >
-                <option value="standard">Standard Protection (Liveness Score &gt; 0.85)</option>
-                <option value="strict">Strict Protection (Liveness Score &gt; 0.95)</option>
-                <option value="off">Bypass / Off</option>
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              {[
-                { icon: '🔍', label: 'Scan face → Extract 128-d vector' },
-                { icon: '⛓', label: 'Query contract → Fetch registered CID' },
-                { icon: '🔐', label: 'Run snarkjs.groth16.fullProve in browser' },
-              ].map((step) => (
-                <div key={step.label} className="flex items-center gap-3 text-xs text-zinc-400 bg-zinc-950/60 border border-zinc-800/60 rounded-xl px-4 py-2.5">
-                  <span className="text-base">{step.icon}</span>
-                  <span>{step.label}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Wallet Banner */}
-            <div className="bg-zinc-950/80 border border-zinc-800/80 rounded-2xl p-4 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className={`w-3 h-3 rounded-full ${walletAddress ? 'bg-green-500 glow-green' : 'bg-amber-500 animate-pulse'}`} />
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400">Connected Wallet</h4>
-                  <p className="text-xs font-mono text-zinc-500 mt-0.5 truncate max-w-[200px] sm:max-w-xs">
-                    {walletAddress || 'Not Connected'}
-                  </p>
-                </div>
-              </div>
-              {!walletAddress && (
+            {/* Tab switcher */}
+            {!isScanning && progressStep !== 'success' && progressStep !== 'redirecting' && !isProcessing && (
+              <div className="flex gap-1 p-1 bg-zinc-950/80 border border-zinc-800 rounded-2xl mb-6">
                 <button
                   type="button"
-                  onClick={connectWallet}
-                  className="px-4 py-2 text-xs font-semibold text-white bg-zinc-800 hover:bg-zinc-700 active:scale-95 border border-zinc-700 rounded-xl transition-all"
+                  id="tab-register"
+                  onClick={() => setAuthMode('register')}
+                  className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-200 ${authMode === 'register'
+                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
+                      : 'text-zinc-500 hover:text-zinc-300'
+                    }`}
                 >
-                  Connect Wallet
+                  ✦ Register
                 </button>
-              )}
-            </div>
-
-            <button
-              id="btn-login-scan"
-              type="submit"
-              disabled={isProcessing || !isModelLoaded}
-              className={`w-full py-4 rounded-xl text-sm font-bold tracking-wider uppercase text-white bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-500 hover:to-teal-500 active:scale-[0.99] transition-all flex items-center justify-center gap-3 shadow-lg ${
-                (!isModelLoaded || isProcessing) && 'opacity-50 cursor-not-allowed'
-              }`}
-            >
-              {!isModelLoaded ? (
-                <><div className="w-5 h-5 border-2 border-zinc-400 border-t-white rounded-full animate-spin" />Loading Neural Nets...</>
-              ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                  </svg>
-                  Scan Face to Login
-                </>
-              )}
-            </button>
-          </form>
-        )}
-
-        {/* WEBCAM SCANNING INTERFACE */}
-        {isScanning && (
-          <div className="flex flex-col items-center justify-center space-y-6">
-            <div className="relative w-full max-w-sm aspect-square bg-zinc-950 rounded-2xl overflow-hidden border-2 border-purple-500 glow-purple">
-              
-              <Webcam
-                audio={false}
-                ref={webcamRef}
-                screenshotFormat="image/jpeg"
-                videoConstraints={{ width: 400, height: 400, facingMode: 'user' }}
-                className="w-full h-full object-cover"
-              />
-
-              <div className="absolute inset-0 border-4 border-dashed border-purple-500/20 rounded-2xl pointer-events-none" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 h-4/5 border-2 border-purple-500/50 rounded-full pointer-events-none flex items-center justify-center">
-                <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-purple-500 to-transparent absolute animate-scan pointer-events-none" />
+                <button
+                  type="button"
+                  id="tab-login"
+                  onClick={() => setAuthMode('login')}
+                  className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-200 ${authMode === 'login'
+                      ? 'bg-gradient-to-r from-green-600 to-teal-600 text-white shadow-lg'
+                      : 'text-zinc-500 hover:text-zinc-300'
+                    }`}
+                >
+                  ⚡ Login
+                </button>
               </div>
-              
-              <div className="absolute top-4 left-4 w-6 h-6 border-t-4 border-l-4 border-purple-500 pointer-events-none" />
-              <div className="absolute top-4 right-4 w-6 h-6 border-t-4 border-r-4 border-purple-500 pointer-events-none" />
-              <div className="absolute bottom-4 left-4 w-6 h-6 border-b-4 border-l-4 border-purple-500 pointer-events-none" />
-              <div className="absolute bottom-4 right-4 w-6 h-6 border-b-4 border-r-4 border-purple-500 pointer-events-none" />
+            )}
 
-              {/* Dynamic Liveness instruction overlay */}
-              <div className="absolute bottom-4 inset-x-4 bg-zinc-950/95 backdrop-blur border border-zinc-800 rounded-lg p-2.5 text-center pointer-events-none">
-                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
-                  {livenessLevel === 'off' ? 'Face Frame Alignment' : 'Spoofing Guard Active'}
-                </p>
-                <p className="text-xs text-purple-400 font-semibold mt-0.5">
-                  {livenessLevel === 'off'
-                    ? 'Center face inside the frame'
-                    : liveness.instruction || 'Analyzing structure...'}
-                </p>
-              </div>
-            </div>
-
-            {/* Challenge Progress feedback bar */}
-            {livenessLevel !== 'off' && liveness.currentChallenge && (
-              <div className="w-full max-w-sm bg-zinc-950/80 border border-zinc-800 rounded-xl p-4 space-y-2">
-                <div className="flex justify-between text-xs">
-                  <span className="text-zinc-400 font-medium">
-                    Step {liveness.challengeIndex + 1}/3: {challengeLabelMap[liveness.currentChallenge]}
-                  </span>
-                  <span className="text-purple-400 font-bold">Attempt {liveness.attempts + 1}/3</span>
+            {/* REGISTER FORM */}
+            {!isScanning && progressStep !== 'success' && progressStep !== 'redirecting' && authMode === 'register' && (
+              <form onSubmit={startScanningFlow} className="space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="Enter name"
+                      disabled={isProcessing}
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors"
+                    />
+                    {formErrors.name && <p className="text-xs text-red-500 mt-1">{formErrors.name}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="Enter email"
+                      disabled={isProcessing}
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors"
+                    />
+                    {formErrors.email && <p className="text-xs text-red-500 mt-1">{formErrors.email}</p>}
+                  </div>
                 </div>
 
-                {liveness.currentChallenge === 'blink' ? (
-                  <div className="flex gap-1.5 pt-1">
-                    {[1, 2, 3].map((step) => (
-                      <div
-                        key={step}
-                        className={`flex-1 h-2 rounded-full transition-all duration-300 ${
-                          step <= liveness.progress ? 'bg-green-500' : 'bg-zinc-800'
-                        }`}
-                      />
-                    ))}
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                    Mobile Number (E.164 Format)
+                  </label>
+                  <input
+                    type="text"
+                    name="mobile"
+                    value={formData.mobile}
+                    onChange={handleInputChange}
+                    placeholder="+1234567890"
+                    disabled={isProcessing}
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors"
+                  />
+                  {formErrors.mobile && <p className="text-xs text-red-500 mt-1">{formErrors.mobile}</p>}
+                </div>
+
+                {/* Liveness settings configurator dropdown */}
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                    Liveness Spoof Protection
+                  </label>
+                  <select
+                    value="strict"
+                    disabled
+                    className="w-full bg-zinc-950 border border-zinc-800 text-zinc-500 text-xs rounded-xl px-4 py-3 outline-none opacity-60 cursor-not-allowed"
+                  >
+                    <option value="strict">Strict Protection (Hard Enforced for Registration)</option>
+                  </select>
+                </div>
+
+                {/* Wallet Info Banner */}
+                <div className="bg-zinc-950/80 border border-zinc-800/80 rounded-2xl p-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-3 h-3 rounded-full ${walletAddress ? 'bg-green-500 glow-green' : 'bg-amber-500 animate-pulse'}`} />
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400">Connected Wallet</h4>
+                      <p className="text-xs font-mono text-zinc-500 mt-0.5 truncate max-w-[200px] sm:max-w-xs">
+                        {walletAddress || 'Not Connected'}
+                      </p>
+                    </div>
                   </div>
-                ) : (
-                  <div className="w-full h-2 bg-zinc-850 rounded-full overflow-hidden">
-                    <div
-                      className="bg-green-500 h-full transition-all duration-200"
-                      style={{ width: `${liveness.progress}%` }}
-                    />
+                  {!walletAddress && (
+                    <button
+                      type="button"
+                      onClick={connectWallet}
+                      className="px-4 py-2 text-xs font-semibold text-white bg-zinc-800 hover:bg-zinc-700 active:scale-95 border border-zinc-700 rounded-xl transition-all"
+                    >
+                      Connect Wallet
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  id="btn-register-scan"
+                  type="submit"
+                  disabled={isProcessing || !isModelLoaded}
+                  className={`w-full py-4 rounded-xl text-sm font-bold tracking-wider uppercase text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 active:scale-[0.99] transition-all flex items-center justify-center gap-3 shadow-lg glow-purple ${(!isModelLoaded || isProcessing) && 'opacity-50 cursor-not-allowed'
+                    }`}
+                >
+                  {!isModelLoaded ? (
+                    <><div className="w-5 h-5 border-2 border-zinc-400 border-t-white rounded-full animate-spin" />Loading Neural Nets...</>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+                      </svg>
+                      Scan Face &amp; Create Identity
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
+
+            {/* LOGIN FORM */}
+            {!isScanning && progressStep !== 'success' && progressStep !== 'redirecting' && authMode === 'login' && (
+              <form onSubmit={startScanningFlow} className="space-y-5">
+                <div className="bg-teal-950/30 border border-teal-800/40 rounded-2xl p-5 text-center space-y-2">
+                  <div className="w-14 h-14 mx-auto rounded-full bg-teal-500/10 border border-teal-500/30 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 text-teal-400">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M7.864 4.243A7.5 7.5 0 0 1 19.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 0 0 4.5 10.5a7.464 7.464 0 0 1-1.15 3.993m1.989 3.559A11.209 11.209 0 0 0 8.25 10.5a3.75 3.75 0 1 1 7.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 0 1-3.6 9.75m6.633-4.596a18.666 18.666 0 0 1-2.485 5.33" />
+                    </svg>
+                  </div>
+                  <h3 className="text-sm font-bold text-teal-300">Biometric Login with ZK Proof</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    A <span className="text-teal-400 font-semibold">Groth16 ZK Proof</span> verifies your identity without revealing biometric descriptors.
+                  </p>
+                </div>
+
+                {/* Liveness Selector */}
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+                    Liveness Spoof Protection
+                  </label>
+                  <select
+                    value={livenessLevel}
+                    onChange={(e) => setLivenessLevel(e.target.value as any)}
+                    className="w-full bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs rounded-xl px-4 py-3 outline-none focus:border-purple-500"
+                  >
+                    <option value="standard">Standard Protection (Liveness Score &gt; 0.85)</option>
+                    <option value="strict">Strict Protection (Liveness Score &gt; 0.95)</option>
+                    <option value="off">Bypass / Off</option>
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  {[
+                    { icon: '🔍', label: 'Scan face → Extract 128-d vector' },
+                    { icon: '⛓', label: 'Query contract → Fetch registered CID' },
+                    { icon: '🔐', label: 'Run snarkjs.groth16.fullProve in browser' },
+                  ].map((step) => (
+                    <div key={step.label} className="flex items-center gap-3 text-xs text-zinc-400 bg-zinc-950/60 border border-zinc-800/60 rounded-xl px-4 py-2.5">
+                      <span className="text-base">{step.icon}</span>
+                      <span>{step.label}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Wallet Banner */}
+                <div className="bg-zinc-950/80 border border-zinc-800/80 rounded-2xl p-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-3 h-3 rounded-full ${walletAddress ? 'bg-green-500 glow-green' : 'bg-amber-500 animate-pulse'}`} />
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400">Connected Wallet</h4>
+                      <p className="text-xs font-mono text-zinc-500 mt-0.5 truncate max-w-[200px] sm:max-w-xs">
+                        {walletAddress || 'Not Connected'}
+                      </p>
+                    </div>
+                  </div>
+                  {!walletAddress && (
+                    <button
+                      type="button"
+                      onClick={connectWallet}
+                      className="px-4 py-2 text-xs font-semibold text-white bg-zinc-800 hover:bg-zinc-700 active:scale-95 border border-zinc-700 rounded-xl transition-all"
+                    >
+                      Connect Wallet
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  id="btn-login-scan"
+                  type="submit"
+                  disabled={isProcessing || !isModelLoaded}
+                  className={`w-full py-4 rounded-xl text-sm font-bold tracking-wider uppercase text-white bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-500 hover:to-teal-500 active:scale-[0.99] transition-all flex items-center justify-center gap-3 shadow-lg ${(!isModelLoaded || isProcessing) && 'opacity-50 cursor-not-allowed'
+                    }`}
+                >
+                  {!isModelLoaded ? (
+                    <><div className="w-5 h-5 border-2 border-zinc-400 border-t-white rounded-full animate-spin" />Loading Neural Nets...</>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                      </svg>
+                      Scan Face to Login
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
+
+            {/* WEBCAM SCANNING INTERFACE */}
+            {isScanning && (
+              <div className="flex flex-col items-center justify-center space-y-6">
+                <div className="relative w-full max-w-sm aspect-square bg-zinc-950 rounded-2xl overflow-hidden border-2 border-purple-500 glow-purple">
+
+                  <Webcam
+                    audio={false}
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    videoConstraints={{ width: 400, height: 400, facingMode: 'user' }}
+                    className="w-full h-full object-cover"
+                  />
+
+                  <div className="absolute inset-0 border-4 border-dashed border-purple-500/20 rounded-2xl pointer-events-none" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 h-4/5 border-2 border-purple-500/50 rounded-full pointer-events-none flex items-center justify-center">
+                    <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-purple-500 to-transparent absolute animate-scan pointer-events-none" />
+                  </div>
+
+                  <div className="absolute top-4 left-4 w-6 h-6 border-t-4 border-l-4 border-purple-500 pointer-events-none" />
+                  <div className="absolute top-4 right-4 w-6 h-6 border-t-4 border-r-4 border-purple-500 pointer-events-none" />
+                  <div className="absolute bottom-4 left-4 w-6 h-6 border-b-4 border-l-4 border-purple-500 pointer-events-none" />
+                  <div className="absolute bottom-4 right-4 w-6 h-6 border-b-4 border-r-4 border-purple-500 pointer-events-none" />
+
+                  {/* Dynamic Liveness instruction overlay */}
+                  <div className="absolute bottom-4 inset-x-4 bg-zinc-950/95 backdrop-blur border border-zinc-800 rounded-lg p-2.5 text-center pointer-events-none">
+                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
+                      {livenessLevel === 'off' ? 'Face Frame Alignment' : 'Spoofing Guard Active'}
+                    </p>
+                    <p className="text-xs text-purple-400 font-semibold mt-0.5">
+                      {livenessLevel === 'off'
+                        ? 'Center face inside the frame'
+                        : liveness.instruction || 'Analyzing structure...'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Challenge Progress feedback bar */}
+                {livenessLevel !== 'off' && liveness.currentChallenge && (
+                  <div className="w-full max-w-sm bg-zinc-950/80 border border-zinc-800 rounded-xl p-4 space-y-2">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-zinc-400 font-medium">
+                        Step {liveness.challengeIndex + 1}/3: {challengeLabelMap[liveness.currentChallenge]}
+                      </span>
+                      <span className="text-purple-400 font-bold">Attempt {liveness.attempts + 1}/3</span>
+                    </div>
+
+                    {liveness.currentChallenge === 'blink' ? (
+                      <div className="flex gap-1.5 pt-1">
+                        {[1, 2, 3].map((step) => (
+                          <div
+                            key={step}
+                            className={`flex-1 h-2 rounded-full transition-all duration-300 ${step <= liveness.progress ? 'bg-green-500' : 'bg-zinc-800'
+                              }`}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="w-full h-2 bg-zinc-850 rounded-full overflow-hidden">
+                        <div
+                          className="bg-green-500 h-full transition-all duration-200"
+                          style={{ width: `${liveness.progress}%` }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex gap-4 w-full max-w-sm">
+                  <button
+                    type="button"
+                    onClick={() => setIsScanning(false)}
+                    className="flex-1 py-3 text-xs font-bold uppercase border border-zinc-800 text-zinc-400 hover:bg-zinc-800/50 rounded-xl transition-all"
+                  >
+                    Cancel
+                  </button>
+                  {livenessLevel === 'off' && (
+                    <button
+                      type="button"
+                      onClick={captureAndAuthenticate}
+                      className="flex-1 py-3 text-xs font-bold uppercase bg-purple-600 hover:bg-purple-500 text-white rounded-xl glow-purple transition-all"
+                    >
+                      Capture &amp; Verify
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Redirecting Flow */}
+            {(progressStep === 'success' || progressStep === 'redirecting') && (
+              <div className="text-center py-12 flex flex-col items-center justify-center space-y-6">
+                <div className="w-20 h-20 rounded-full border-4 border-green-500 flex items-center justify-center glow-green animate-pulse-ring">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-10 h-10 text-green-400">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                  </svg>
+                </div>
+
+                {screenshot && (
+                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-green-500/50 glow-green shadow-lg flex items-center justify-center">
+                    <img src={screenshot} className="w-full h-full object-cover" alt="Scanned Biometrics" />
+                  </div>
+                )}
+
+                <div>
+                  <h2 className="text-2xl font-bold text-white">Identity Secured!</h2>
+                  {redirectUrl ? (
+                    <p className="text-sm text-zinc-400 mt-2">
+                      Authentication verified. Redirecting back to app in <span className="font-mono text-purple-400 text-lg font-bold">{countdown}</span> seconds...
+                    </p>
+                  ) : (
+                    <p className="text-sm text-zinc-400 mt-2">
+                      Biometrics matching completed and archived onto IPFS!
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-left font-mono text-xs space-y-2.5">
+                  <div>
+                    <span className="text-zinc-500">IPFS CID:</span>
+                    <span className="text-purple-400 ml-2 break-all">{ipfsCid}</span>
+                  </div>
+                  {zkProof && (
+                    <div>
+                      <span className="text-zinc-500">ZK Proof Protocol:</span>
+                      <span className="text-green-400 ml-2">{zkProof.protocol}</span>
+                    </div>
+                  )}
+                  {livenessLevel !== 'off' && liveness.score > 0 && (
+                    <div>
+                      <span className="text-zinc-500">Liveness Score:</span>
+                      <span className="text-purple-400 ml-2 font-bold">{liveness.score}</span>
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-zinc-500">Wallet Auth:</span>
+                    <span className="text-blue-400 ml-2 truncate">{walletAddress}</span>
+                  </div>
+                </div>
+
+                {!redirectUrl && (
+                  <div className="w-full pt-4 border-t border-zinc-800 space-y-6 text-left">
+                    <div className="bg-amber-950/20 border border-amber-800/40 rounded-xl p-3 text-amber-400 text-xs flex gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 shrink-0">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                      </svg>
+                      <span>
+                        No redirect parameter found. Showing diagnostic tools and decrypters.
+                      </span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold">
+                        Test Redirect URL
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={customRedirectUrl}
+                          onChange={(e) => setCustomRedirectUrl(e.target.value)}
+                          className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-700 font-mono focus:outline-none focus:border-purple-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={executeManualRedirect}
+                          className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 active:scale-95 border border-zinc-700 text-white rounded-xl text-xs font-semibold transition-all shrink-0"
+                        >
+                          Redirect
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="bg-zinc-950/60 border border-zinc-800 rounded-xl p-4 space-y-4">
+                      <div>
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-purple-400">Decryption Sandbox</h4>
+                        <p className="text-zinc-500 text-[11px] mt-1">
+                          Retrieve and decrypt your PII directly from the client. Prove the Lit Protocol access control holds.
+                        </p>
+                      </div>
+
+                      {decryptionError && (
+                        <p className="text-xs text-red-400 font-mono bg-red-950/20 border border-red-800/40 p-2 rounded-lg">
+                          {decryptionError}
+                        </p>
+                      )}
+
+                      {decryptedData ? (
+                        <div className="bg-purple-950/20 border border-purple-800/40 rounded-lg p-3 space-y-1 font-mono text-[11px]">
+                          <div className="text-purple-400 font-bold uppercase mb-1">Decrypted PII Payload:</div>
+                          <div>Name: <span className="text-white font-sans font-medium">{decryptedData.name}</span></div>
+                          <div>Email: <span className="text-white font-sans font-medium">{decryptedData.email}</span></div>
+                          <div>Mobile: <span className="text-white font-sans font-medium">{decryptedData.mobile}</span></div>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleTestDecryption}
+                          disabled={isDecrypting}
+                          className="w-full py-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                        >
+                          {isDecrypting ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-zinc-400 border-t-white rounded-full animate-spin" />
+                              Decrypting...
+                            </>
+                          ) : (
+                            'Decrypt Using Wallet'
+                          )}
+                        </button>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => window.location.reload()}
+                      className="w-full py-2 border border-zinc-800 hover:bg-zinc-900 text-zinc-400 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+                    >
+                      Restart Flow
+                    </button>
                   </div>
                 )}
               </div>
             )}
 
-            <div className="flex gap-4 w-full max-w-sm">
-              <button
-                type="button"
-                onClick={() => setIsScanning(false)}
-                className="flex-1 py-3 text-xs font-bold uppercase border border-zinc-800 text-zinc-400 hover:bg-zinc-800/50 rounded-xl transition-all"
-              >
-                Cancel
-              </button>
-              {livenessLevel === 'off' && (
-                <button
-                  type="button"
-                  onClick={captureAndAuthenticate}
-                  className="flex-1 py-3 text-xs font-bold uppercase bg-purple-600 hover:bg-purple-500 text-white rounded-xl glow-purple transition-all"
-                >
-                  Capture &amp; Verify
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Redirecting Flow */}
-        {(progressStep === 'success' || progressStep === 'redirecting') && (
-          <div className="text-center py-12 flex flex-col items-center justify-center space-y-6">
-            <div className="w-20 h-20 rounded-full border-4 border-green-500 flex items-center justify-center glow-green animate-pulse-ring">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-10 h-10 text-green-400">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-              </svg>
-            </div>
-
-            {screenshot && (
-              <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-green-500/50 glow-green shadow-lg flex items-center justify-center">
-                <img src={screenshot} className="w-full h-full object-cover" alt="Scanned Biometrics" />
-              </div>
-            )}
-
-            <div>
-              <h2 className="text-2xl font-bold text-white">Identity Secured!</h2>
-              {redirectUrl ? (
-                <p className="text-sm text-zinc-400 mt-2">
-                  Authentication verified. Redirecting back to app in <span className="font-mono text-purple-400 text-lg font-bold">{countdown}</span> seconds...
-                </p>
-              ) : (
-                <p className="text-sm text-zinc-400 mt-2">
-                  Biometrics matching completed and archived onto IPFS!
-                </p>
-              )}
-            </div>
-
-            <div className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-left font-mono text-xs space-y-2.5">
-              <div>
-                <span className="text-zinc-500">IPFS CID:</span>
-                <span className="text-purple-400 ml-2 break-all">{ipfsCid}</span>
-              </div>
-              {zkProof && (
-                <div>
-                  <span className="text-zinc-500">ZK Proof Protocol:</span>
-                  <span className="text-green-400 ml-2">{zkProof.protocol}</span>
-                </div>
-              )}
-              {livenessLevel !== 'off' && liveness.score > 0 && (
-                <div>
-                  <span className="text-zinc-500">Liveness Score:</span>
-                  <span className="text-purple-400 ml-2 font-bold">{liveness.score}</span>
-                </div>
-              )}
-              <div>
-                <span className="text-zinc-500">Wallet Auth:</span>
-                <span className="text-blue-400 ml-2 truncate">{walletAddress}</span>
-              </div>
-            </div>
-
-            {!redirectUrl && (
-              <div className="w-full pt-4 border-t border-zinc-800 space-y-6 text-left">
-                <div className="bg-amber-950/20 border border-amber-800/40 rounded-xl p-3 text-amber-400 text-xs flex gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 shrink-0">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+            {/* Global Errors Banner */}
+            {sdkError && (
+              <div className="mt-6 rounded-2xl p-4 flex flex-col gap-3 text-sm border border-red-800/50 bg-red-950/30">
+                <div className="flex gap-3 text-red-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 shrink-0 mt-0.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
                   </svg>
-                  <span>
-                    No redirect parameter found. Showing diagnostic tools and decrypters.
-                  </span>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold">
-                    Test Redirect URL
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={customRedirectUrl}
-                      onChange={(e) => setCustomRedirectUrl(e.target.value)}
-                      className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-700 font-mono focus:outline-none focus:border-purple-500"
-                    />
-                    <button
-                      type="button"
-                      onClick={executeManualRedirect}
-                      className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 active:scale-95 border border-zinc-700 text-white rounded-xl text-xs font-semibold transition-all shrink-0"
-                    >
-                      Redirect
-                    </button>
-                  </div>
-                </div>
-
-                <div className="bg-zinc-950/60 border border-zinc-800 rounded-xl p-4 space-y-4">
                   <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-purple-400">Decryption Sandbox</h4>
-                    <p className="text-zinc-500 text-[11px] mt-1">
-                      Retrieve and decrypt your PII directly from the client. Prove the Lit Protocol access control holds.
-                    </p>
+                    <h5 className="font-bold text-red-300">
+                      {sdkError.toLowerCase().includes('already exists') || sdkError.toLowerCase().includes('sybil')
+                        ? '⚠ Identity Already Registered'
+                        : sdkError.toLowerCase().includes('not found') || sdkError.toLowerCase().includes('register first')
+                          ? '⚠ Identity Not Found'
+                          : 'Execution Error'}
+                    </h5>
+                    <p className="text-xs text-red-300/80 mt-1 font-mono leading-relaxed">{sdkError}</p>
                   </div>
-
-                  {decryptionError && (
-                    <p className="text-xs text-red-400 font-mono bg-red-950/20 border border-red-800/40 p-2 rounded-lg">
-                      {decryptionError}
-                    </p>
-                  )}
-
-                  {decryptedData ? (
-                    <div className="bg-purple-950/20 border border-purple-800/40 rounded-lg p-3 space-y-1 font-mono text-[11px]">
-                      <div className="text-purple-400 font-bold uppercase mb-1">Decrypted PII Payload:</div>
-                      <div>Name: <span className="text-white font-sans font-medium">{decryptedData.name}</span></div>
-                      <div>Email: <span className="text-white font-sans font-medium">{decryptedData.email}</span></div>
-                      <div>Mobile: <span className="text-white font-sans font-medium">{decryptedData.mobile}</span></div>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleTestDecryption}
-                      disabled={isDecrypting}
-                      className="w-full py-2.5 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
-                    >
-                      {isDecrypting ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-zinc-400 border-t-white rounded-full animate-spin" />
-                          Decrypting...
-                        </>
-                      ) : (
-                        'Decrypt Using Wallet'
-                      )}
-                    </button>
-                  )}
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => window.location.reload()}
-                  className="w-full py-2 border border-zinc-800 hover:bg-zinc-900 text-zinc-400 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
-                >
-                  Restart Flow
-                </button>
+                {(sdkError.toLowerCase().includes('already exists') || sdkError.toLowerCase().includes('sybil')) && (
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode('login')}
+                    className="w-full py-2.5 bg-gradient-to-r from-green-700 to-teal-700 hover:from-green-600 hover:to-teal-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                  >
+                    ⚡ Switch to Login Mode
+                  </button>
+                )}
+                {(sdkError.toLowerCase().includes('not found') || sdkError.toLowerCase().includes('register first')) && (
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode('register')}
+                    className="w-full py-2.5 bg-gradient-to-r from-purple-700 to-blue-700 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                  >
+                    ✦ Switch to Register Mode
+                  </button>
+                )}
+
+
               </div>
             )}
-          </div>
+          </>
         )}
-
-        {/* Global Errors Banner */}
-        {sdkError && (
-          <div className="mt-6 rounded-2xl p-4 flex flex-col gap-3 text-sm border border-red-800/50 bg-red-950/30">
-            <div className="flex gap-3 text-red-400">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 shrink-0 mt-0.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
-              </svg>
-              <div>
-                <h5 className="font-bold text-red-300">
-                  {sdkError.toLowerCase().includes('already exists') || sdkError.toLowerCase().includes('sybil')
-                    ? '⚠ Identity Already Registered'
-                    : sdkError.toLowerCase().includes('not found') || sdkError.toLowerCase().includes('register first')
-                    ? '⚠ Identity Not Found'
-                    : 'Execution Error'}
-                </h5>
-                <p className="text-xs text-red-300/80 mt-1 font-mono leading-relaxed">{sdkError}</p>
-              </div>
-            </div>
-
-            {(sdkError.toLowerCase().includes('already exists') || sdkError.toLowerCase().includes('sybil')) && (
-              <button
-                type="button"
-                onClick={() => setAuthMode('login')}
-                className="w-full py-2.5 bg-gradient-to-r from-green-700 to-teal-700 hover:from-green-600 hover:to-teal-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
-              >
-                ⚡ Switch to Login Mode
-              </button>
-            )}
-            {(sdkError.toLowerCase().includes('not found') || sdkError.toLowerCase().includes('register first')) && (
-              <button
-                type="button"
-                onClick={() => setAuthMode('register')}
-                className="w-full py-2.5 bg-gradient-to-r from-purple-700 to-blue-700 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
-              >
-                ✦ Switch to Register Mode
-              </button>
-            )}
-
-
-          </div>
-        )}
-        </>
-      )}
       </div>
 
       {/* Diagnostic Logs Sidebar */}
       <div className="w-full lg:w-2/5 bg-zinc-900/60 backdrop-blur-xl border border-zinc-800 rounded-3xl p-6 shadow-2xl flex flex-col h-[520px] lg:h-[680px] relative overflow-hidden">
-        
+
         <div className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-4">
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-red-500" />
@@ -1416,7 +1411,7 @@ export function OnboardingFlow() {
 
         <div className="mb-4 bg-zinc-950 border border-zinc-800/80 rounded-xl p-3.5 space-y-2">
           <h4 className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">Integration Status</h4>
-          
+
           <div className="grid grid-cols-2 gap-2 text-[10px] font-medium font-mono">
             <div className={`border p-1.5 rounded-lg flex items-center gap-2 ${getStepColor('connecting-wallet')}`}>
               <div className="w-1.5 h-1.5 rounded-full bg-current" />
